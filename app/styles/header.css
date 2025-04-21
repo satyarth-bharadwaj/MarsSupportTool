@@ -1,0 +1,105 @@
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fcf9f9; /* Example background color */
+    padding: 8px;
+    box-sizing: border-box; /* Ensure padding is included in the width */
+    display: flex;
+    justify-content: space-between; /* Align items horizontally with equal space between */
+    align-items: center; /* Align items vertically */
+    box-shadow: 1px #a12f2f;
+   
+  }
+  
+  /* Style for the logo/image */
+  header img {
+    
+    height: 50px; 
+  }
+ .inner-div{
+    display: flex;
+    align-items: center;
+   
+ }
+ .inner-div1{
+    display: flex;
+    justify-content: space-around;
+    
+ }
+  
+  /* Style for buttons */
+  header button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px; /* Example padding */
+  }
+  
+  /* Add more specific styles for individual elements as needed */
+  
+
+  
+  .hunger-box-button,
+  .full-screen-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .hunger-box-button .burger-icon,
+  .full-screen-button .fullscreen-icon {
+    /* Add your burger icon and full-screen icon styles */
+    /* Example: */
+    width: 20px;
+    height: 20px;
+    background-color: black;
+  }
+  .hunger-box-button img,.full-screen-button img, .dark-mode-toggle img,.duplicate-tab-button img{
+    width: 25px;
+    height: 25px;
+  }
+  
+  
+  .dark-mode-toggle input[type="checkbox"] {
+    /* Add your toggle switch styles */
+    /* Example: */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 40px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .dark-mode-toggle input[type="checkbox"]::before {
+    /* Add your toggle switch knob styles */
+    /* Example: */
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 2px;
+    left: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+  }
+  
+  .dark-mode-toggle input[type="checkbox"]:checked::before {
+    /* Move the knob to the right when toggled */
+    /* Example: */
+    transform: translateX(20px);
+  }
+  .redot{
+    color: red !important;
+  }
+  .text{
+    color:#004e97 !important;
+  }
+  

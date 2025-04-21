@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mars-support-tool
+  namespace: mars-support-tool
+spec:
+  selector:
+    matchLabels:
+      app: mars-support-tool
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2 # https://github.com/ContainerSolutions/k8s-deployment-strategies
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: mars-support-tool
+    spec:
+      containers:
+        - name: mars-support-tool
+          image: nexusdockerhosted.sys.ourtesco.com/010_mars_docker/marssupporttool:#{buildNo}#
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 10000
+            runAsGroup: 10000
+          env:
+            - name: CONFIG_ENV
+              value: ppe
+          imagePullPolicy: Always
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sleep", "90"]
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "200m"
+            limits:
+              memory: "3Gi"
+              cpu: "1500m"
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: proxy-config
+      imagePullSecrets:
+        - name: nexus-credentials

@@ -1,0 +1,54 @@
+/* Navbar.css */
+
+/* Base styles */
+.navbar-container {
+  width: 140px !important;
+  position: fixed;
+}
+
+.navbar-list {
+  list-style-type: none; /* Remove bullet points */
+  padding: 0; /* Remove default padding */
+}
+
+.navbar-list li a {
+  display: block;
+  text-decoration: none; /* Remove underline */
+  font-size: 16px; /* Font size */
+  padding: 8px 12px; /* Padding */
+  border-radius: 5px; /* Rounded corners */
+
+  background-color: #8c8b88e9; /* Default background color */
+  color: black; /* Default text color */
+}
+
+/* Dark mode styles */
+.dark-mode .navbar-container {
+  background-color: black;
+  /* background-color: #3a3d41; */
+}
+
+.dark-mode .navbar-list {
+  background-color: black; /* Background color in dark mode */
+}
+
+.dark-mode .navbar-list li a {
+  color: white; /* Text color in dark mode */
+  background-color: black; /* Background color in dark mode */
+}
+
+.navbar-list li a:hover {
+  color: rgb(62, 25, 172);
+  text-decoration: solid;
+}
+
+.dark-mode .navbar-list li a:hover {
+  text-decoration: solid;
+}
+
+.navbar-list li a img {
+  height: 20px !important;
+}
+.navbar-list .active {
+  text-decoration: solid;
+}

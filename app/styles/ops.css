@@ -1,0 +1,217 @@
+/* app/styles/Ops.css */
+
+/* Main container matching Points dashboard */
+.ops-container {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color);
+  min-height: 100vh;
+  color: var(--text-color);
+}
+
+/* Header matching Points dashboard */
+.ops-header {
+  background-color: var(--header-bg);
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Content area matching Points dashboard */
+.ops-main-content {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Selectors matching Points input style */
+.ops-selectors {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.selector-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ops-select {
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background-color: var(--input-bg);
+  color: var(--text-color);
+}
+
+/* Buttons matching Points dashboard */
+.ops-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-right: 10px;
+}
+
+.ops-button.download {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.ops-button.upload {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.ops-button.proceed {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.ops-button.error-download {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.ops-button.reset {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.ops-button.disabled {
+  background-color: var(--disabled-bg);
+  color: var(--disabled-text);
+  cursor: not-allowed;
+}
+
+/* Tables matching Points dashboard style */
+.ops-table-container {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+.ops-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.ops-table th, .ops-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ops-table th {
+  background-color: var(--table-header-bg);
+  font-weight: bold;
+}
+
+.ops-table tr:nth-child(even) {
+  background-color: var(--table-row-even);
+}
+
+.ops-table tr:nth-child(odd) {
+  background-color: var(--table-row-odd);
+}
+
+/* Status indicators */
+.status-cell.success {
+  color: var(--success-color);
+  font-weight: bold;
+}
+
+.status-cell.error {
+  color: var(--danger-color);
+  font-weight: bold;
+}
+
+/* Progress bar */
+.processing-indicator {
+  margin: 20px 0;
+}
+
+.progress-bar {
+  height: 10px;
+  background-color: var(--progress-bg);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+/* Error messages */
+.pre-validation-error, .api-error-message {
+  color: var(--danger-color);
+  margin: 10px 0;
+  padding: 10px;
+  background-color: var(--error-bg);
+  border-radius: 4px;
+}
+
+/* Results section */
+.results-container {
+  background-color: var(--card-bg);
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.results-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Dark mode variables */
+:root {
+  --background-color: #f4f4f9;
+  --header-bg: #fff;
+  --card-bg: #fff;
+  --text-color: #333;
+  --primary-color: #1059a7;
+  --primary-dark: #0c4a8a;
+  --border-color: #ddd;
+  --input-bg: #fff;
+  --input-focus-bg: #fff;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --disabled-bg: #e9ecef;
+  --disabled-text: #6c757d;
+  --table-header-bg: #f8f9fa;
+  --table-row-even: #f8f9fa;
+  --table-row-odd: #fff;
+  --progress-bg: #e9ecef;
+  --error-bg: #f8d7da;
+}
+
+/* Dark mode overrides */
+.dark-mode {
+  --background-color: #121212;
+  --header-bg: #1F1F1F;
+  --card-bg: #2D2C2A;
+  --text-color: #e0e0e0;
+  --primary-color: #1a73e8;
+  --primary-dark: #1557b0;
+  --border-color: #444;
+  --input-bg: #333;
+  --input-focus-bg: #444;
+  --table-header-bg: #333;
+  --table-row-even: #2D2C2A;
+  --table-row-odd: #3D3D3D;
+  --progress-bg: #333;
+  --error-bg: #3a1c1c;
+}

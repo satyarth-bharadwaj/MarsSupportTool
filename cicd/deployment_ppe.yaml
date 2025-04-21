@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: support-tool
+  namespace: support-tool
+spec:
+  selector:
+    matchLabels:
+      app: support-tool
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2 # https://github.com/ContainerSolutions/k8s-deployment-strategies
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: support-tool
+    spec:
+      containers:
+        - name: support-tool
+          image: couponapi.azurecr.io/marssupporttool:#{buildNo}#
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 10000
+            runAsGroup: 10000
+          env:
+            - name: CONFIG_ENV
+              value: ppe
+          imagePullPolicy: Always
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sleep", "90"]
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "200m"
+            limits:
+              memory: "3Gi"
+              cpu: "1500m"
+          ports:
+            - containerPort: 5000
+      terminationGracePeriodSeconds: 101
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "role"
+                    operator: In
+                    values:
+                      - application
+      tolerations:
+        - key: "application"
+          operator: "Equal"
+          value: "svs"
+          effect: "NoSchedule"
+      imagePullSecrets:
+        - name: acr-key
+        - name: splunk-acr-secret

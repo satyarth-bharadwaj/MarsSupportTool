@@ -1,0 +1,80 @@
+trigger:
+  - master
+pr:
+  - master
+pool: coupons-svs-devops-agent-pool
+
+variables:
+  - group: till-docker-cr-group
+  - group: pipelineVariables
+  - name: DOCKER_IMAGE_REGISTRY
+    value: couponapi
+  - name: IMAGE_REPOSITORY
+    value: mars-support-tool
+  - name: GIT_SHA
+    value: $(Build.SourceVersion)
+steps:
+  #Build and push dev docker image
+
+  - task: NodeTool@0
+    inputs:
+      versionSource: "fromFile"
+      versionFilePath: "$(Build.SourcesDirectory)/Mars-support-tool/.node-version"
+  - script: npm install -g yarn
+    displayName: Install Yarn
+    workingDirectory: "$(Build.SourcesDirectory)/Mars-support-tool"
+  - script: |
+      node -v
+      yarn -v
+    displayName: Verify Node and Yarn version
+    workingDirectory: "$(Build.SourcesDirectory)/Mars-support-tool"
+  - script: |
+      yarn install \
+      --frozen-lockfile \
+      --non-interactive \
+      --no-progress \
+      --network-timeout 600000
+    workingDirectory: "$(Build.SourcesDirectory)/Mars-support-tool"
+    env:
+      YARN_CACHE_FOLDER: ${{ variables.YARN_CACHE_FOLDER }}
+    displayName: Install Dependencies
+
+  - script: yarn build
+    displayName: build
+    workingDirectory: "$(Build.SourcesDirectory)/Mars-support-tool"
+  - script: |
+      echo "##vso[build.updatebuildnumber]$GIT_SHA"
+    displayName: Set build version
+
+  - script: |
+      docker login -u $(nexus-ourtesco-user-name) -p $(nexus-ourtesco-password) nexusdockerhosted.sys.ourtesco.com
+      docker build -t nexusdockerhosted.sys.ourtesco.com/010_mars_docker/marssupporttool:$(Build.BuildId) .
+      docker tag marssupporttool:$(Build.BuildId) nexusdockerhosted.sys.ourtesco.com/010_mars_docker/marssupporttool:$(Build.BuildId)
+      docker push nexusdockerhosted.sys.ourtesco.com/010_mars_docker/marssupporttool:$(Build.BuildId)
+    displayName: "Build and Push to Nexus Repository Manager"
+    workingDirectory: "$(Build.SourcesDirectory)/Mars-support-tool"
+
+  - script: |
+      mkdir ReleaseArtificats
+      echo $(Build.BuildId) > ReleaseArtificats/buildnumber.txt
+      if [ $(Build.SourceBranch) == "refs/heads/main" ]; then
+        echo $(Build.SourceVersion) > ReleaseArtificats/sourceversion.txt
+      fi
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: "ReleaseArtificats"
+      Contents: "**"
+      TargetFolder: "$(Build.ArtifactStagingDirectory)"
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: "$(Build.SourcesDirectory)/Mars-support-tool/cicd/"
+      Contents: "**"
+      TargetFolder: "$(Build.ArtifactStagingDirectory)"
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: "$(Build.ArtifactStagingDirectory)"
+      ArtifactName: "marsReleaseArtifactTKS"
+      publishLocation: "Container"

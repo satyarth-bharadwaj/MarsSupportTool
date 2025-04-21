@@ -1,0 +1,119 @@
+trigger:
+  - master
+pr:
+  - master
+pool: coupons-svs-devops-agent-pool
+
+variables:
+  - group: till-docker-cr-group
+  - group: pipelineVariables
+  - name: DOCKER_IMAGE_REGISTRY
+    value: couponapi
+  - name: IMAGE_REPOSITORY
+    value: mars-support-tool
+  - name: GIT_SHA
+    value: $(Build.SourceVersion)
+steps:
+  #Build and push dev docker image
+  - task: NodeTool@0
+    inputs:
+      versionSource: "fromFile"
+      versionFilePath: "$(Build.SourcesDirectory)/Mars-support-tool/.node-version"
+
+  - script: npm install -g yarn
+    displayName: Install Yarn
+    workingDirectory: "$(Build.SourcesDirectory)/Mars-support-tool"
+
+  - script: |
+      node -v
+      yarn -v
+    displayName: Verify Node and Yarn version
+    workingDirectory: "$(Build.SourcesDirectory)/Mars-support-tool"
+
+  - script: |
+      yarn install \
+      --frozen-lockfile \
+      --non-interactive \
+      --no-progress \
+      --network-timeout 600000
+    workingDirectory: "$(Build.SourcesDirectory)/Mars-support-tool"
+    env:
+      YARN_CACHE_FOLDER: ${{ variables.YARN_CACHE_FOLDER }}
+    displayName: Install Dependencies
+
+  - script: yarn test
+    displayName: tests check
+    workingDirectory: "$(Build.SourcesDirectory)/Mars-support-tool"
+
+  - script: yarn build
+    displayName: build
+    workingDirectory: "$(Build.SourcesDirectory)/Mars-support-tool"
+
+  - script: |
+      echo "##vso[build.updatebuildnumber]$GIT_SHA"
+    displayName: Set build version
+
+  - task: SnykSecurityScan@1
+    displayName: 'Snyk open source scan'
+    inputs:
+      serviceConnectionEndpoint: 'snyk-authentication'
+      testType: 'app'
+      targetFile: ./Mars-support-tool/package.json
+      monitorWhen: 'always'
+      severityThreshold: 'critical'
+      failOnIssues: false
+
+  - task: Docker@0
+    displayName: "Build cloud image"
+    inputs:
+      containerregistrytype: "Azure Container Registry"
+      azureSubscription: "AzureDevopsAuth"
+      azureContainerRegistry: '{"loginServer":"couponapi.azurecr.io", "id" : "/subscriptions/ed05a0b8-fef2-433b-a3be-b07abd655824/resourceGroups/euw-dev-010-coupon-rg/providers/Microsoft.ContainerRegistry/registries/Supporttool"}'
+      action: "Build an image"
+      dockerFile: "**/Dockerfile"
+      buildArguments: |
+        BUILD_ID_ARG=$(Build.BuildId)
+      imageName: "marssupporttool:$(Build.BuildId)"
+
+  - task: SnykSecurityScan@1
+    displayName: 'Snyk Cloud container scan'
+    inputs:
+      serviceConnectionEndpoint: 'snyk-authentication'
+      testType: 'container'
+      dockerImageName: 'couponapi.azurecr.io/marssupporttool:$(Build.BuildId)'
+      monitorWhen: 'always'
+      failOnIssues: false
+      severityThreshold: 'critical'
+
+  - task: Docker@0
+    displayName: "Push cloud image"
+    inputs:
+      azureSubscription: AzureDevopsAuth
+      azureContainerRegistry: '{"loginServer":"couponapi.azurecr.io", "id" : "/subscriptions/ed05a0b8-fef2-433b-a3be-b07abd655824/resourceGroups/euw-dev-010-coupon-rg/providers/Microsoft.ContainerRegistry/registries/Supporttool"}'
+      action: "Push an image"
+      imageName: "marssupporttool:$(Build.BuildId)"
+
+  - script: |
+      mkdir ReleaseArtificats
+      echo $(Build.BuildId) > ReleaseArtificats/buildnumber.txt
+      if [ $(Build.SourceBranch) == "refs/heads/main" ]; then
+        echo $(Build.SourceVersion) > ReleaseArtificats/sourceversion.txt
+      fi
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: "ReleaseArtificats"
+      Contents: "**"
+      TargetFolder: "$(Build.ArtifactStagingDirectory)"
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: "$(Build.SourcesDirectory)/Mars-support-tool/cicd/"
+      Contents: "**"
+      TargetFolder: "$(Build.ArtifactStagingDirectory)"
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: "$(Build.ArtifactStagingDirectory)"
+      ArtifactName: "marsReleaseArtifact"
+      publishLocation: "Container"
