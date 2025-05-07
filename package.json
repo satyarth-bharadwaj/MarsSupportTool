@@ -22,6 +22,7 @@
     "express": "^4.19.2",
     "highlight.js": "^11.9.0",
     "isbot": "^4.4.0",
+    "kubectl": "^0.0.0",
     "match-sorter": "^6.3.1",
     "oidc-client-ts": "^3.2.0",
     "react": "^18.2.0",

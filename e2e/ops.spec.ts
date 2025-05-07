@@ -58,12 +58,12 @@ test.describe("E2E testing by clicking the dropdown options and check whether it
     expect(funderOptions).toContain('Reward Partner bonus points');
   });
 
-  test("Point Crediting Files button functionality", async () => {
+  test("Point Crediting File button functionality", async () => {
     await page.selectOption('select[id="country"]', 'UK');
     await page.selectOption('select[id="funder"]', 'Reward Partner bonus points');
     
     const downloadPromise = page.waitForEvent('download');
-    await page.click('button:has-text("Point Crediting Files")');
+    await page.click('button:has-text("Point Crediting File")');
     const download = await downloadPromise;
     
     expect(download.suggestedFilename()).toMatch(/UK_Reward_Partner_bonus_points_template/);

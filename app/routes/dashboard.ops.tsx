@@ -4,7 +4,7 @@ import { appContext } from "~/states/app-context";
 import "~/styles/ops.css";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import getCookieValue, { getCredCookieValue } from "./resources/getCookie";
+import getCookieValue from "./resources/getCookie";
 import { generateIdentityResponse } from "./resources/tokenGenerator";
 import {
   validateHeaders,
@@ -36,6 +36,11 @@ interface CreditResult {
   transactionId: string;
 }
 
+let credentials: string = "";
+export const loader = async () => {
+  credentials = process.env.CLIENT_CREDENTIALS || "";
+};
+
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const creditData = formData.get("creditData");
@@ -44,7 +49,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const selectedCountry = formData.get("selectedCountry") as string;
   const fileName = formData.get("fileName") as string;
   const fileTimestamp = extractTimestampFromFilename(fileName);
-  const credentials = process.env.CLIENT_CREDENTIALS || "";
+  //const credentials = process.env.CLIENT_CREDENTIALS || "";
   
   if (!creditData || typeof creditData !== "string") {
     return json({ error: "Invalid credit data" }, { status: 400 });
@@ -378,7 +383,7 @@ const OpsPage: React.FC = () => {
                   cursor: !selectedFunder ? 'not-allowed' : 'pointer'
                 }}
               >
-                Point Crediting Files
+                Point Crediting File
               </button>
               
               <label className={`ops-button ${(!selectedCountry || !selectedFunder) ? 'disabled' : 'upload'}`}
