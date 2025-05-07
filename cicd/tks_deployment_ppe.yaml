@@ -1,3 +1,13 @@
+apiVersion: v1
+kind: Secret
+metadata:  
+  name: secret-data  
+  namespace: mars-support-tool
+type: Opaque
+stringData:
+  sso.ppe.clientid: #{mars-support-tool-onelogin-ppe-client-id}#
+  api.ppe.clientcredentials: #{mars-support-tool-access-token-client-credentials-ppe}#
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,6 +39,17 @@ spec:
           env:
             - name: CONFIG_ENV
               value: ppe
+            - name : CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: secret-data
+                  key: sso.ppe.clientid
+            - name : CLIENT_CREDENTIALS
+              valueFrom:
+                secretKeyRef:
+                  name: secret-data
+                  key: api.ppe.clientcredentials
+
           imagePullPolicy: Always
           lifecycle:
             preStop:
