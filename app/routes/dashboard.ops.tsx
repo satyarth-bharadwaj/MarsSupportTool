@@ -52,6 +52,9 @@ export async function action({ request }: ActionFunctionArgs) {
   const fileName = formData.get("fileName") as string;
   const fileTimestamp = extractTimestampFromFilename(fileName);
   credentials = await loader();
+  if (!credentials) {
+    return json({ error: "Credentials not found" }, { status: 500 });
+  }
   
   if (!creditData || typeof creditData !== "string") {
     return json({ error: "Invalid credit data" }, { status: 400 });
